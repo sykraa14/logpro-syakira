@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Welcome to Syakira's World</title>
+  <style>
+    :root {
+      --pink: #fff0f5;
+      --pink-2: #ffdce8;
+      --pink-3: #f7a9c4;
+      --hot-pink: #d95d8a;
+      --text: #593b49;
+      --cream: #fffafc;
+      --green: #a9d8a2;
+    }
+    * { box-sizing: border-box; }
+    body {
+      margin: 0;
+      font-family: "Trebuchet MS", Arial, sans-serif;
+      background: var(--pink);
+      color: var(--text);
+      line-height: 1.6;
+    }
+    button, input { font: inherit; }
+    button, .button-link {
+      border: 0;
+      border-radius: 999px;
+      padding: 11px 20px;
+      background: var(--hot-pink);
+      color: white;
+      cursor: pointer;
+      font-weight: bold;
+      text-decoration: none;
+      display: inline-block;
+      transition: transform .15s, background .15s;
+    }
+    button:hover, .button-link:hover { transform: translateY(-2px); background: #c94d7b; }
+    button:disabled { opacity: .45; cursor: not-allowed; transform: none; }
+    .secondary { background: #f4c2d4; color: #633d4d; }
+    .secondary:hover { background: #eeaec6; }
+    .page {
+      display: none;
+      min-height: 100vh;
+      padding: 32px 18px 48px;
+      animation: fadeIn .35s ease;
+    }
+    .page.active { display: flex; align-items: center; justify-content: center; }
+    .content { width: min(950px, 100%); margin: auto; }
+    .panel {
+      background: var(--cream);
+      border: 2px solid #ffe0eb;
+      border-radius: 28px;
+      padding: clamp(22px, 5vw, 46px);
+      box-shadow: 0 12px 35px #d78da51c;
+    }
+    .center { text-align: center; }
+    .eyebrow { color: var(--hot-pink); font-weight: bold; letter-spacing: 2px; text-transform: uppercase; font-size: .78rem; }
+    h1, h2, h3 { line-height: 1.2; }
+    h1 { font-size: clamp(2.5rem, 7vw, 5rem); margin: 8px 0 16px; color: #b94d79; }
+    h2 { color: #b94d79; font-size: clamp(1.8rem, 4vw, 2.7rem); margin-top: 0; }
+    h3 { color: #b94d79; }
+    p { max-width: 720px; }
+    .center p { margin-left: auto; margin-right: auto; }
+    .sparkle { font-size: 2rem; }
+    .button-row { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 22px; }
+    .tiny { font-size: .88rem; opacity: .8; }
+    .two-col { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 22px; align-items: center; }
+    .photo-placeholder {
+      display: flex; align-items: center; justify-content: center;
+      min-height: 230px; padding: 18px; text-align: center;
+      border: 2px dashed #eaa5bd; border-radius: 22px;
+      background: #fff0f6; color: #b05c7d;
+    }
+    .photo-placeholder img { width: 100%; max-height: 350px; object-fit: cover; border-radius: 16px; }
+    .photo-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 14px; }
+    .idol-card, .hobby-card, .drama-card, .concert-card {
+      background: #fff0f6; border: 1px solid #f8d1df; border-radius: 18px; padding: 14px;
+    }
+    .idol-card .photo-placeholder { min-height: 150px; }
+    .idol-card h3 { margin-bottom: 5px; }
+    .idol-card p { margin: 5px 0 10px; font-size: .9rem; }
+    .pill { display: inline-block; background: #ffe0eb; padding: 5px 10px; border-radius: 999px; margin: 3px; font-size: .85rem; }
+    .question-box { background: #fff0f6; border-radius: 20px; padding: 22px; margin-top: 18px; }
+    .answer-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 10px; margin-top: 16px; }
+    .answer-list button { border-radius: 14px; }
+    .feedback { min-height: 28px; font-weight: bold; margin-top: 12px; }
+    .game-area {
+      position: relative; overflow: hidden; border-radius: 18px; border: 2px solid #f6c3d5;
+      background: #f9fff4; margin: 18px 0 12px; touch-action: none;
+    }
+    #runnerCanvas { display: block; width: 100%; max-width: 760px; height: auto; margin: auto; }
+    #slingshotCanvas { display: block; width: 100%; max-width: 760px; height: auto; margin: auto; touch-action: none; }
+    .score-line { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; font-weight: bold; }
+    .note { padding: 12px 15px; background: #fff0f6; border-radius: 14px; font-size: .92rem; }
+    .section-gap { margin-top: 30px; }
+    .footer-note { margin-top: 26px; font-size: .8rem; opacity: .75; text-align: center; }
+    .link-list a { color: #b94d79; font-weight: bold; margin-right: 10px; }
+    .profile-list { padding-left: 20px; }
+    .profile-list li { margin: 7px 0; }
+    .hidden { display: none !important; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(7px); } to { opacity: 1; transform: translateY(0); } }
+    @media (max-width: 650px) {
+      .two-col { grid-template-columns: 1fr; }
+      .photo-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .page { padding: 18px 12px 30px; }
+      .panel { border-radius: 22px; }
+    }
+    @media (max-width: 420px) {
+      .photo-grid { grid-template-columns: 1fr; }
+    }
+
+/* Interactive profile cards */
+.profile-cards {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin: 24px 0;
+}
+
+.profile-card {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+  position: relative;
+  overflow: hidden;
+  padding: 18px 15px;
+  background: linear-gradient(135deg, #fff7fa, #ffe8f0);
+  border: 1px solid #f6ccdc;
+  border-radius: 20px;
+  transition: transform 0.25s ease,
+              box-shadow 0.25s ease,
+              background 0.25s ease;
+  cursor: default;
+}
+
+.profile-card:hover {
+  transform: translateY(-5px) rotate(-1deg);
+  box-shadow: 0 10px 22px #d98aaa30;
+  background: linear-gradient(135deg, #ffe8f0, #ffdce9);
+}
+
+.profile-icon {
+  flex-shrink: 0;
+  width: 48px;
+  height: 48px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: white;
+  border-radius: 16px;
+  font-size: 25px;
+  box-shadow: 0 3px 8px #d98aaa20;
+  transition: transform 0.25s ease;
+}
+
+.profile-card:hover .profile-icon {
+  transform: scale(1.12) rotate(8deg);
+}
+
+.profile-info {
+  min-width: 0;
+  position: relative;
+  z-index: 1;
+}
+
+.profile-info span {
+  font-size: 0.65rem;
+  font-weight: bold;
+  letter-spacing: 1.5px;
+  color: #c16b8b;
+}
+
+.profile-info h3 {
+  margin: 3px 0;
+  font-size: 1.05rem;
+  color: #a74770;
+}
+
+.profile-info p {
+  margin: 0;
+  font-size: 0.78rem;
+  line-height: 1.4;
+  color: #765464;
+}
+
+.profile-number {
+  position: absolute;
+  right: 9px;
+  bottom: -13px;
+  font-size: 2.8rem;
+  font-weight: bold;
+  color: #f3c7d7;
+  opacity: 0.55;
+  pointer-events: none;
+}
+
+@media (max-width: 600px) {
+  .profile-cards {
+    grid-template-columns: 1fr;
+  }
+}
+
+
+    /* Concert photo slider */
+    .photo-slider {
+      position: relative;
+      display: block;
+      width: 100%;
+      margin: 0 auto 14px;
+      overflow: hidden;
+      border-radius: 18px;
+      background: #fff0f6;
+    }
+    .concert-card > .photo-slider { min-height: 0; }
+    .concert-card > .photo-slider .slides img { height: 230px; }
+    .slides {
+      display: flex;
+      width: 100%;
+      transition: transform .4s ease;
+    }
+    .slides img {
+      display: block;
+      flex: 0 0 100%;
+      width: 100%;
+      height: 280px;
+      max-height: none;
+      object-fit: cover;
+      border-radius: 0;
+    }
+    .photo-slider .slider-btn {
+      position: absolute;
+      z-index: 2;
+      top: 50%;
+      transform: translateY(-50%);
+      padding: 8px 12px;
+      background: #ffffffd9;
+      color: #b94d79;
+    }
+    .photo-slider .slider-btn:hover {
+      background: white;
+      transform: translateY(-50%);
+    }
+    .photo-slider .slider-btn.prev { left: 8px; }
+    .photo-slider .slider-btn.next { right: 8px; }
+    .slider-dots {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+      padding: 10px;
+    }
+    .slider-dots button {
+      width: 10px;
+      height: 10px;
+      min-width: 10px;
+      padding: 0;
+      border-radius: 50%;
+      background: #edbfd0;
+    }
+    .slider-dots button.active { background: #d95d8a; }
+
+  </style>
+</head>
+<body>
+
+  <section class="page active" id="welcome">
+    <main class="content panel center">
+      <div class="sparkle">୨୧ ✧ ˚</div>
+      <p class="eyebrow">a little corner of the internet</p>
+      <h1>Welcome to<br>Syakira's World</h1>
+      <p>A tiny world filled with my favorite things, little hobbies, music, dramas, and fun surprises. Before you come in, let's play!</p>
+      <div class="button-row">
+        <button onclick="showPage('logisticsQuiz')">Let's Start ✨</button>
+      </div>
+      <p class="footer-note">Made with love, pink vibes, and a little bit of chaos ♡</p>
+    </main>
+  </section>
+
+  <section class="page" id="logisticsQuiz">
+    <main class="content panel">
+      <p class="eyebrow">first little challenge</p>
+      <h2>Logistics Mini Quiz 📦</h2>
+      <p>Before you join my world, answer one question about my major!</p>
+      <div class="question-box">
+        <h3>Apa tujuan utama pengelolaan persediaan dalam sistem logistik?</h3>
+        <div class="answer-list">
+          <button class="secondary" onclick="checkLogistics(false)">Menyimpan barang sebanyak mungkin</button>
+          <button class="secondary" onclick="checkLogistics(true)">Menjaga ketersediaan barang dengan biaya yang efisien</button>
+          <button class="secondary" onclick="checkLogistics(false)">Membuat semua barang selalu menumpuk</button>
+        </div>
+        <p class="feedback" id="logisticsFeedback" aria-live="polite"></p>
+      </div>
+      <div class="button-row">
+        <button id="toIntro" disabled onclick="showPage('intro')">Correct! Let's get to know me →</button>
+      </div>
+    </main>
+  </section>
+
+  <section class="page" id="intro">
+    <main class="content panel">
+      <p class="eyebrow">nice to meet you</p>
+      <h2>A Little About Me ♡</h2>
+      <div class="two-col">
+        <div>
+          <p>Hi! I'm <strong>Syakira Rachmah</strong>, nice to meet you!</p>
+          <div class="profile-cards">
+
+  <div class="profile-card" title="My major">
+    <div class="profile-icon">📦</div>
+    <div class="profile-info">
+      <span>MY MAJOR</span>
+      <h3>Teknik Logistik</h3>
+      <p>Planning, organizing & connecting things ♡</p>
+    </div>
+  </div>
+
+  <div class="profile-card" title="My campus">
+    <div class="profile-icon">🎓</div>
+    <div class="profile-info">
+      <span>MY CAMPUS</span>
+      <h3>UPI</h3>
+      <p>Universitas Pendidikan Indonesia</p>
+    </div>
+  </div>
+
+  <div class="profile-card" title="Where I come from">
+    <div class="profile-icon">🌷</div>
+    <div class="profile-info">
+      <span>MY HOMETOWN</span>
+      <h3>Bandung</h3>
+      <p>A little piece of home ♡</p>
+    </div>
+  </div>
+
+  <div class="profile-card" title="My personality">
+    <div class="profile-icon">🪄</div>
+    <div class="profile-info">
+      <span>MY PERSONALITY</span>
+      <h3>ISTP</h3>
+      <p>Independent, practical & curious!</p>
+    </div>
+  </div>
+
+</div>
+          <p>I love spending my time surrounded by music, movies, creative little things, and so many other fun adventures. Welcome to my little world, let’s explore it together! 🎀✨!</p>
+        </div>
+        <div class="photo-slider profile-photo-slider">
+          <div class="slides">
+            <img src="syakira1.jpeg" alt="Syakira photo 1">
+            <img src="syakira2.jpeg" alt="Syakira photo 2">
+            <img src="syakira3.jpeg" alt="Syakira photo 3">
+            <img src="syakira4.jpeg" alt="Syakira photo 4">
+            <img src="syakira5.jpeg" alt="Syakira photo 5">
+          </div>
+          <button class="slider-btn prev" onclick="geserFotoSyakira(-1)" aria-label="Previous Syakira photo">&#10094;</button>
+          <button class="slider-btn next" onclick="geserFotoSyakira(1)" aria-label="Next Syakira photo">&#10095;</button>
+          <div class="slider-dots" id="syakiraSliderDots"></div>
+        </div>
+      </div>
+      <div class="button-row"><button onclick="showPage('runnerGame')">Next excitement! →</button></div>
+    </main>
+  </section>
+
+  <section class="page" id="runnerGame">
+    <main class="content panel">
+      <p class="eyebrow">jump, little bunny!</p>
+      <h2>Bunny's Flower Run 🐰</h2>
+      <p>Help the bunny hop over the flowers! 🌸🐰 Each flower you successfully jump over earns you 10 points. Collect 50 points to unlock the next page! ✨</p>
+      <div class="score-line"><span>Score: <span id="runnerScore">0</span> / 50</span><span>Controls: Space / ↑ / click the game area</span></div>
+      <div class="game-area"><canvas id="runnerCanvas" width="760" height="250" aria-label="Flowers Hopping Bunny Game"></canvas></div>
+      <p class="feedback" id="runnerMessage" aria-live="polite">Press Start, then jump before hitting the flowers.</p>
+      <div class="button-row">
+        <button onclick="startRunner()">Start / Restart</button>
+        <button id="toHobbies" disabled onclick="showPage('hobbies')">50 points! Next →</button>
+      </div>
+    </main>
+  </section>
+
+  <section class="page" id="hobbies">
+    <main class="content panel">
+      <p class="eyebrow">things that make me happy</p>
+      <h2>My Little Hobbies 🎧</h2>
+      <div class="photo-grid">
+        <article class="hobby-card">
+          <div class="photo-placeholder">
+          <img src="musik.jpeg" alt="Listening to Music">
+          </div>
+          <h3>Listening to Music</h3>
+          <p>I absolutely love listening to music, especially K-pop! 🎧 Music is always there for every mood. I’m also a big fan of R&B and upbeat, feel-good songs that make every journey more fun and enjoyable. 💗✨</p>
+        </article>
+        <article class="hobby-card">
+          <div class="photo-placeholder">
+          <img src="movie.jpeg" alt="Watching Movies">
+          </div>
+          <h3>Watching Movies</h3>
+          <p>Watching movies is one of my favorite ways to unwind, get lost in a good story, and escape into a whole different world. 🎬🍿</p>
+        </article>
+        <article class="hobby-card">
+          <div class="photo-placeholder">
+          <img src="diamondpainting.jpeg" alt="Building & Creating">
+          </div>
+          <h3>Building & Creating</h3>
+          <p>I also love building and putting things together, whether it’s bricks, diamond painting, or puzzles. 🧩💎 There’s something so satisfying about turning little pieces into something beautiful! 🎀</p>
+        </article>
+      </div>
+      <div class="button-row"><button onclick="showPage('slingshotGame')">Next to Penguin Slingshot Game →</button></div>
+    </main>
+  </section>
+
+  <section class="page" id="slingshotGame">
+    <main class="content panel">
+      <p class="eyebrow">aim, pull, release!</p>
+      <h2>Penguin SlingShot 🐧⭐</h2>
+      <p>Pull the penguin back on the slingshot, aim for the stars, and let go! 🐧⭐ Each star is worth 10 points. Collect 50 points to unlock the next page! 🎯</p>
+      <div class="score-line"><span>Score: <span id="shotScore">0</span> / 50</span><span>Stars Hit: <span id="starsHit">0</span> / 5</span></div>
+      <div class="game-area"><canvas id="slingshotCanvas" width="760" height="360" aria-label="Penguin Slingshot Game"></canvas></div>
+      <p class="feedback" id="shotMessage" aria-live="polite">Pull the penguin back with your mouse or finger, then release to launch it!</p>
+      <div class="button-row">
+        <button onclick="resetSlingshot()">Start / Restart</button>
+        <button id="toIdols" disabled onclick="showPage('idols')">50 points! Next →</button>
+      </div>
+    </main>
+  </section>
+
+  <section class="page" id="idols">
+    <main class="content panel">
+      <p class="eyebrow">my playlist, my people</p>
+      <h2>K-pop Corner 💿</h2>
+      <p>Here are some of my favorite K-pop groups! 💗 Aren’t they all so handsome? 😭✨ Not only do they have amazing voices and incredible talent, but they’re also super funny and full of personality! You should definitely check them out on YouTube and see for yourself! 🎧🎤</p>
+      <div class="photo-grid">
+        <article class="idol-card">
+          <div class="photo-placeholder"><img src="nct.jpeg" alt="NCT"></div>
+          <h3>NCT</h3>
+	  <p>
+	    NCT 127 · NCT DREAM · WayV · NCT WISH<br>
+            NCT is a group that never fails to amaze me! 💚 With their unique neo concepts, amazing performances, and incredible music, there's always something new to love<br>
+	  </p>
+          <a href="https://www.youtube.com/@NCTsmtown" target="_blank" rel="noopener">YouTube NCT ↗</a>
+        </article>
+        <article class="idol-card">
+          <div class="photo-placeholder"><img src="treasure.jpeg" alt="TREASURE"></div>
+          <h3>TREASURE</h3><p>TREASURE has a special place in my heart! 💎 Their amazing songs, powerful performances, and chaotic, funny personalities always make me smile. Watching their content is like spending time with a bunch of fun friends. 🩵✨</p>
+          <a href="https://www.youtube.com/@treasure" target="_blank" rel="noopener">YouTube TREASURE ↗</a>
+        </article>
+        <article class="idol-card">
+          <div class="photo-placeholder"><img src="enhypen.jpeg" alt="ENHYPEN"></div>
+          <h3>ENHYPEN</h3><p>They have such a cool vampire concept! 🧛🏻‍♂️🖤 It makes them even more unique, mysterious, and irresistibly cool!</p>
+          <a href="https://www.youtube.com/@ENHYPENOFFICIAL" target="_blank" rel="noopener">YouTube ENHYPEN ↗</a>
+        </article>
+        <article class="idol-card">
+          <div class="photo-placeholder"><img src="boynextdoor.jpeg" alt="BOYNEXTDOOR"></div>
+          <h3>BOYNEXTDOOR</h3><p>BOYNEXTDOOR feels like that group of boys you'd love to hang out with every day! 🏡 Their relatable music, playful energy, and natural chemistry make them so fun to watch. They have that effortlessly charming vibe that makes you fall for them without even realizing it! 🎶</p>
+          <a href="https://www.youtube.com/@BOYNEXTDOOR_official" target="_blank" rel="noopener">YouTube BOYNEXTDOOR ↗</a>
+        </article>
+        <article class="idol-card">
+          <div class="photo-placeholder"><img src="lngshot.jpeg" alt=" LNGSHOT"></div>
+          <h3>LNGSHOT</h3><p>The new group that has caught my attention! I'm excited to discover more about their music, personalities, and unique charms. There's something so fun about following a group from the beginning and watching them grow. Let's see where this new obsession takes me! 💗✨</p>
+          <a href="https://www.youtube.com/@LNGSHOT4SHO" target="_blank" rel="noopener">YouTube LNGSHOT ↗</a>
+        </article>
+        <article class="idol-card">
+          <div class="photo-placeholder"><img src="riize.jpeg" alt="RIIZE"></div>
+          <h3>RIIZE</h3><p>Get into the RIIZE! RIIZE has that fresh, youthful energy that makes them so easy to love! 🧡 From their catchy songs to their cool performances and adorable moments, they always give me something to smile about. Their name says it all: let's rise together and enjoy every step of their journey! 🌟🎧</p>
+          <a href="https://www.youtube.com/@RIIZE_official" target="_blank" rel="noopener">YouTube RIIZE ↗</a>
+        </article>
+      </div>
+
+      <div class="section-gap">
+        <h2>Concert Memories 🎤</h2>
+        <p>I've been lucky enough to attend concerts by some of my favorite groups, including NCT, TREASURE, ENHYPEN, and BOYNEXTDOOR! 💚🎤 Concerts make me incredibly happy and give me the biggest dopamine rush, but once they're over, I often feel so empty and miss them so much! 🥹💔✨</p>
+        <div class="photo-grid">
+          <article class="concert-card">
+            <div class="photo-slider">
+              <div class="slides">
+                <img src="fototds2.jpg" alt="NCT The Dream Show 2 concert">
+                <img src="fototheunity.jpg" alt="NCT The Unity concert">
+                <img src="fototds3.jpg" alt="NCT The Dream Show 3 concert">
+                <img src="fotowayv.jpg" alt="WayV On The Way concert">
+                <img src="fototds4.jpg" alt="NCT The Dream Show 4 concert">
+              </div>
+              <button class="slider-btn prev" onclick="geserFoto(-1)" aria-label="Previous concert photo">&#10094;</button>
+              <button class="slider-btn next" onclick="geserFoto(1)" aria-label="Next concert photo">&#10095;</button>
+              <div class="slider-dots" id="sliderDots"></div>
+            </div>
+            <h3>NCT</h3>
+            <p>
+              The Dream Show 2 – 4 March 2023<br>
+              The Unity – 14 January 2024<br>
+              The Dream Show 3 – 18 May 2024<br>
+              On The Way – 5 October 2024<br>
+              The Dream Show 4 – 27 September 2025
+            </p>
+          </article>
+          <article class="concert-card">
+	  <div class="photo-placeholder"><img src="fotofate.jpg" alt="Foto Fate"></div><h3>Enhypen</h3><p>Fate+ – 18 August 2024</p></article>
+          <article class="concert-card"><div class="photo-placeholder"><img src="fotoknockonvol1.jpg" alt="Foto Knock On Vol 1"></div><h3>Boynextdoor</h3><p>Knock On Vol. 1 – 12 April 2025</p></article>
+          <article class="concert-card"><div class="photo-placeholder"><img src="fotopulseon.jpeg" alt="Foto Pulse On"></div><h3>Treasure</h3><p>Pulse On – 25 April 2026</p></article>
+        </div>
+      </div>
+      <div class="button-row"><button onclick="showPage('biasQuiz')">Get to Know My Bias Through a Quiz! →</button></div>
+    </main>
+  </section>
+
+  <section class="page" id="biasQuiz">
+    <main class="content panel">
+      <p class="eyebrow">do you know my bias?</p>
+      <h2>Guess My Bias! 💗</h2>
+      <p>Guess my bias by answering these five questions! Get at least 3 answers right to unlock the next page.</p>
+      <div class="score-line"><span>Question: <span id="biasProgress">1</span> / 5</span><span>Correct: <span id="biasScore">0</span> / 5</span></div>
+      <div class="question-box" id="biasQuestionBox">
+        <div class="photo-placeholder" id="biasPhoto" style="min-height:180px"></div>
+        <h3 id="biasQuestion">Who's my bias at NCT Dream?</h3>
+        <div class="answer-list" id="biasAnswers"></div>
+        <p class="feedback" id="biasFeedback" aria-live="polite"></p>
+      </div>
+      <div class="button-row">
+        <button id="nextBias" disabled onclick="nextBiasQuestion()">Next Question →</button>
+        <button id="toDramas" class="hidden" disabled onclick="showPage('dramas')">Next to Dramas & Films →</button>
+        <button class="secondary" onclick="restartBiasQuiz()">Retry quiz</button>
+      </div>
+    </main>
+  </section>
+
+  <section class="page" id="dramas">
+    <main class="content panel">
+      <p class="eyebrow">stories i love</p>
+      <h2>K-drama & Movie Night 🍿</h2>
+      <div class="two-col">
+        <div>
+          <h3>My K-drama Taste</h3>
+          <p>I love watching Korean dramas, especially <strong>romantic comedy (romcom)</strong> and <strong>thriller</strong>. Rom-coms are perfect for some lighthearted fun, while thrillers keep me hooked and guessing what happens next! 🔍 As for horror, it’s not really my thing, so it probably wouldn’t be my first choice! 👻🙅🏻‍♀️</p>
+          <span class="pill">Romcom 💕</span><span class="pill">Thriller 🕵️</span><span class="pill">Horror: not really 👻</span>
+        </div>
+        <div class="photo-placeholder">
+          <img src="drakor.jpeg" alt="Poster drama Korea">
+        </div>
+      <div class="section-gap two-col">
+        <div class="photo-placeholder">
+        <img src="conan.jpeg" alt="Detective Conan Movie">
+        </div>
+        <div>
+          <h3>Annual Detective Conan Movie Tradition 🔍</h3>
+          <p>I also love watching the annual <em>Detective Conan</em> movies! 🕵🏻‍♂️🔍 It’s so much fun trying to solve the mysteries and following Conan on his adventures year after year!</p>
+        </div>
+      </div>
+      <div class="button-row"><button onclick="showPage('goodbye')">Reached The End! →</button></div>
+    </main>
+  </section>
+
+  <section class="page" id="goodbye">
+    <main class="content panel center">
+      <div class="sparkle">♡ ✧ ˚</div>
+      <p class="eyebrow">thanks for visiting</p>
+      <h1>That's My World!</h1>
+      <p>Thanks for spending a little time in my tiny world. I hope you find something fun and exciting here. See you again soon🎀! ♡<br><br>
+서툰 이 글 위엔 제목도 없지만<br>
+On top of this clumsy words, there's not even a title<br>
+난 나만의 답을 찾고 있어<br>
+But l'm finding my own answer<br>
+내 심장 소릴 따라서<br>
+I'm following the sound of my heart<br>
+온 세상이 두근대고 있어<br>
+The whole world is pounding<br><br>
+My Page - NCT Dream<br>
+      </p>
+      <div class="button-row">
+        <a class="button-link" href="https://www.instagram.com/syrch14" target="_blank" rel="noopener">Find me on Instagram ↗</a>
+        <a class="button-link secondary" href="https://mail.google.com/mail/?view=cm&fs=1&to=syakirarachmah@gmail.com">Send me an email ✉</a>
+      </div>
+      <p class="footer-note">Made with love, pink vibes, and a little bit of chaos ♡</p>
+      <div class="button-row"><button class="secondary" onclick="showPage('welcome')">Back to The Beginning ↺</button></div>
+    </main>
+  </section>
+
+<script>
+  function showPage(id) {
+    document.querySelectorAll('.page').forEach(page => page.classList.remove('active'));
+    document.getElementById(id).classList.add('active');
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (id === 'runnerGame') drawRunner();
+    if (id === 'slingshotGame') drawSlingshot();
+  }
+
+  // QUIZ TEKNIK LOGISTIK
+  function checkLogistics(correct) {
+    const feedback = document.getElementById('logisticsFeedback');
+    if (correct) {
+      feedback.textContent = 'Yay, that is correct! Inventory should be available when needed without making costs too high. ✨';
+      document.getElementById('toIntro').disabled = false;
+    } else {
+      feedback.textContent = 'Not quite! Think about balancing item availability and cost.';
+    }
+  }
+
+  // BUNNY GAME: Avoid the flowers! Each flower you successfully jump over earns you 10 points.
+  const runnerCanvas = document.getElementById('runnerCanvas');
+  const rctx = runnerCanvas.getContext('2d');
+  let runner = { x: 90, y: 176, vy: 0, jumping: false };
+  let flowers = [];
+  let runnerScore = 0;
+  let runnerActive = false;
+  let runnerFrame = 0;
+  let runnerAnim = null;
+
+  function drawFlower(ctx, x, y) {
+    ctx.fillStyle = '#e8a2bf';
+    for (let i = 0; i < 5; i++) {
+      const a = (Math.PI * 2 * i) / 5;
+      ctx.beginPath(); ctx.arc(x + Math.cos(a) * 8, y + Math.sin(a) * 8, 6, 0, Math.PI * 2); ctx.fill();
+    }
+    ctx.fillStyle = '#f5ce70'; ctx.beginPath(); ctx.arc(x, y, 5, 0, Math.PI * 2); ctx.fill();
+    ctx.strokeStyle = '#6eaf6d'; ctx.lineWidth = 3; ctx.beginPath(); ctx.moveTo(x, y + 8); ctx.lineTo(x, y + 24); ctx.stroke();
+  }
+  function drawBunny(x, y) {
+    rctx.fillStyle = '#fff'; rctx.strokeStyle = '#b77d98'; rctx.lineWidth = 2;
+    rctx.beginPath(); rctx.ellipse(x - 8, y - 14, 6, 15, -.2, 0, Math.PI * 2); rctx.fill(); rctx.stroke();
+    rctx.beginPath(); rctx.ellipse(x + 5, y - 15, 6, 15, .2, 0, Math.PI * 2); rctx.fill(); rctx.stroke();
+    rctx.beginPath(); rctx.ellipse(x, y, 22, 17, 0, 0, Math.PI * 2); rctx.fill(); rctx.stroke();
+    rctx.fillStyle = '#593b49'; rctx.beginPath(); rctx.arc(x + 8, y - 3, 2.5, 0, Math.PI * 2); rctx.fill();
+    rctx.fillStyle = '#f0a8c1'; rctx.beginPath(); rctx.arc(x + 15, y + 3, 4, 0, Math.PI * 2); rctx.fill();
+  }
+  function drawRunner() {
+    const w = runnerCanvas.width, h = runnerCanvas.height;
+    rctx.clearRect(0, 0, w, h);
+    rctx.fillStyle = '#f9fff4'; rctx.fillRect(0, 0, w, h);
+    rctx.fillStyle = '#b7dfa8'; rctx.fillRect(0, 207, w, 43);
+    rctx.strokeStyle = '#79b875'; rctx.lineWidth = 3; rctx.beginPath(); rctx.moveTo(0, 207); rctx.lineTo(w, 207); rctx.stroke();
+    // awan
+    rctx.fillStyle = '#fff'; [[110,45],[400,60],[620,35]].forEach(([x,y])=>{rctx.beginPath();rctx.arc(x,y,15,0,Math.PI*2);rctx.arc(x+17,y-5,19,0,Math.PI*2);rctx.arc(x+36,y,14,0,Math.PI*2);rctx.fill();});
+    flowers.forEach(f => drawFlower(rctx, f.x, 190));
+    drawBunny(runner.x, runner.y);
+    if (!runnerActive) {
+      rctx.fillStyle = '#593b49'; rctx.font = 'bold 17px Trebuchet MS'; rctx.textAlign = 'center';
+      rctx.fillText(runnerScore >= 50 ? 'You did it! 50 points! ♡' : 'Press Start to Play!', w/2, 135);
+    }
+  }
+  function jumpBunny() {
+    if (runnerActive && !runner.jumping) { runner.vy = -12; runner.jumping = true; }
+  }
+  function runnerLoop() {
+    if (!runnerActive) return;
+    runnerFrame++;
+    runner.vy += 0.55; runner.y += runner.vy;
+    if (runner.y >= 176) { runner.y = 176; runner.vy = 0; runner.jumping = false; }
+    if (runnerFrame % 70 === 0) flowers.push({ x: 780, scored: false });
+    flowers.forEach(f => {
+      f.x -= 5;
+      if (!f.scored && f.x < runner.x - 25) { f.scored = true; runnerScore += 10; document.getElementById('runnerScore').textContent = runnerScore; }
+      if (f.x < runner.x + 23 && f.x > runner.x - 20 && runner.y > 151) {
+        runnerActive = false;
+        document.getElementById('runnerMessage').textContent = 'Oops, you hit a flower! Press Start / Restart to try again.';
+      }
+    });
+    flowers = flowers.filter(f => f.x > -30);
+    if (runnerScore >= 50) {
+      runnerScore = 50; document.getElementById('runnerScore').textContent = 50;
+      runnerActive = false;
+      document.getElementById('toHobbies').disabled = false;
+      document.getElementById('runnerMessage').textContent = 'Yay! You collected 50 points! 🎉 The next page is now unlocked 🌷';
+    }
+    drawRunner();
+    if (runnerActive) runnerAnim = requestAnimationFrame(runnerLoop);
+  }
+  function startRunner() {
+    if (runnerAnim) cancelAnimationFrame(runnerAnim);
+    runner = { x: 90, y: 176, vy: 0, jumping: false };
+    flowers = []; runnerScore = 0; runnerFrame = 0; runnerActive = true;
+    document.getElementById('runnerScore').textContent = '0';
+    document.getElementById('toHobbies').disabled = true;
+    document.getElementById('runnerMessage').textContent = "Let's jump and avoid flowers!";
+    runnerLoop();
+  }
+  runnerCanvas.addEventListener('pointerdown', jumpBunny);
+  document.addEventListener('keydown', e => {
+    if (['Space','ArrowUp'].includes(e.code) && document.getElementById('runnerGame').classList.contains('active')) { e.preventDefault(); jumpBunny(); }
+  });
+  drawRunner();
+
+  // GAME PENGUIN SLINGSHOT: Pull the penguin back, then release it toward the stars!
+  const shotCanvas = document.getElementById('slingshotCanvas');
+  const sctx = shotCanvas.getContext('2d');
+  const sling = { x: 130, y: 245 };
+  let penguin = { x: 130, y: 245, vx: 0, vy: 0 };
+  let targetStars = [];
+  let shotScore = 0, shotActive = false, dragging = false, flying = false;
+  let dragPoint = { x: 130, y: 245 }, shotAnim = null, shotRoundHits = 0;
+
+  function makeStars() {
+    targetStars = [
+      {x:300,y:105,hit:false},{x:420,y:185,hit:false},{x:540,y:90,hit:false},
+      {x:600,y:245,hit:false},{x:350,y:285,hit:false}
+    ];
+  }
+  function drawStar(ctx, cx, cy, r) {
+    ctx.beginPath();
+    for (let i=0;i<10;i++) {
+      const a = -Math.PI/2 + i*Math.PI/5, rr = i%2===0 ? r : r*.45;
+      const x = cx + Math.cos(a)*rr, y = cy + Math.sin(a)*rr;
+      if (i===0) ctx.moveTo(x,y); else ctx.lineTo(x,y);
+    }
+    ctx.closePath(); ctx.fillStyle = '#f4c94f'; ctx.fill(); ctx.strokeStyle = '#e2a72e'; ctx.lineWidth=2; ctx.stroke();
+  }
+  function drawPenguin(x,y) {
+    sctx.fillStyle = '#34495e'; sctx.beginPath(); sctx.ellipse(x,y,18,23,0,0,Math.PI*2); sctx.fill();
+    sctx.fillStyle = '#fff'; sctx.beginPath(); sctx.ellipse(x,y+4,11,14,0,0,Math.PI*2); sctx.fill();
+    sctx.fillStyle = '#f5a623'; sctx.beginPath(); sctx.moveTo(x+3,y-4); sctx.lineTo(x+16,y); sctx.lineTo(x+3,y+4); sctx.fill();
+    sctx.fillStyle = '#fff'; sctx.beginPath(); sctx.arc(x-5,y-8,3,0,Math.PI*2); sctx.fill();
+    sctx.fillStyle = '#243342'; sctx.beginPath(); sctx.arc(x-4,y-8,1.5,0,Math.PI*2); sctx.fill();
+  }
+  function drawSlingshot() {
+    const w=shotCanvas.width,h=shotCanvas.height;
+    sctx.clearRect(0,0,w,h); sctx.fillStyle='#f9fff4'; sctx.fillRect(0,0,w,h);
+    sctx.fillStyle='#d4edc7'; sctx.fillRect(0,320,w,40);
+    // katapel dan tali
+    sctx.strokeStyle='#9a654c'; sctx.lineWidth=9; sctx.lineCap='round';
+    sctx.beginPath(); sctx.moveTo(112,305); sctx.lineTo(130,245); sctx.lineTo(148,305); sctx.stroke();
+    sctx.strokeStyle='#d68c70'; sctx.lineWidth=3;
+    sctx.beginPath(); sctx.moveTo(119,228); sctx.lineTo((dragging?dragPoint.x:penguin.x),(dragging?dragPoint.y:penguin.y)); sctx.lineTo(141,228); sctx.stroke();
+    targetStars.forEach(st => { if (!st.hit) drawStar(sctx,st.x,st.y,17); else { sctx.fillStyle='#f5dbe5'; sctx.font='20px Arial'; sctx.fillText('♡',st.x-8,st.y+7); } });
+    drawPenguin(dragging ? dragPoint.x : penguin.x, dragging ? dragPoint.y : penguin.y);
+    if (shotScore>=50) { sctx.fillStyle='#593b49';sctx.font='bold 22px Trebuchet MS';sctx.textAlign='center';sctx.fillText('All stars collected! ✨',w/2,35); }
+  }
+  function pointerPos(e) {
+    const rect=shotCanvas.getBoundingClientRect();
+    return {x:(e.clientX-rect.left)*shotCanvas.width/rect.width,y:(e.clientY-rect.top)*shotCanvas.height/rect.height};
+  }
+  shotCanvas.addEventListener('pointerdown', e => {
+    if (!shotActive || flying || shotScore>=50) return;
+    const p=pointerPos(e);
+    if (Math.hypot(p.x-penguin.x,p.y-penguin.y)<45) {
+      dragging=true; dragPoint=p; shotCanvas.setPointerCapture(e.pointerId); drawSlingshot();
+    }
+  });
+  shotCanvas.addEventListener('pointermove', e => { if(dragging){dragPoint=pointerPos(e);drawSlingshot();} });
+  shotCanvas.addEventListener('pointerup', e => {
+    if (!dragging) return;
+    dragging=false;
+    const p=pointerPos(e);
+    penguin={x:dragPoint.x,y:dragPoint.y,vx:(sling.x-p.x)*.16,vy:(sling.y-p.y)*.16};
+    flying=true; animatePenguin();
+  });
+  function animatePenguin() {
+    if (!flying) return;
+    penguin.x+=penguin.vx; penguin.y+=penguin.vy; penguin.vy+=0.24; penguin.vx*=0.995;
+    targetStars.forEach(st => {
+      if(!st.hit && Math.hypot(penguin.x-st.x,penguin.y-st.y)<25) {
+        st.hit=true; shotScore+=10; shotRoundHits++;
+        document.getElementById('shotScore').textContent=shotScore;
+        document.getElementById('starsHit').textContent=shotRoundHits;
+      }
+    });
+    if(shotScore>=50) {
+      shotScore=50; document.getElementById('shotScore').textContent='50';
+      flying=false; shotActive=false;
+      document.getElementById('toIdols').disabled=false;
+      document.getElementById('shotMessage').textContent='Yay! You collected all 5 stars! Amazing job! You can move on to the next page now! 💫';
+      drawSlingshot(); return;
+    }
+    if(penguin.x>780||penguin.x<-20||penguin.y>360||penguin.y<-20) {
+      flying=false; penguin={x:sling.x,y:sling.y}; document.getElementById('shotMessage').textContent="Try aiming the penguin at the stars you haven't hit yet!";
+      drawSlingshot(); return;
+    }
+    drawSlingshot(); shotAnim=requestAnimationFrame(animatePenguin);
+  }
+  function resetSlingshot() {
+    if(shotAnim) cancelAnimationFrame(shotAnim);
+    shotScore=0; shotRoundHits=0; shotActive=true; dragging=false; flying=false;
+    penguin={x:sling.x,y:sling.y}; dragPoint={x:sling.x,y:sling.y}; makeStars();
+    document.getElementById('shotScore').textContent='0';
+    document.getElementById('starsHit').textContent='0';
+    document.getElementById('toIdols').disabled=true;
+    document.getElementById('shotMessage').textContent='Pull the penguin back with your mouse or finger, then release to launch it!';
+    drawSlingshot();
+  }
+  makeStars(); drawSlingshot();
+
+  // QUIZ BIAS: 5 questions, get at least 3 correct to unlock the next page!
+
+const biasQuestions = [
+    {
+        group: 'NCT DREAM',
+        member: 'Jaemin',
+        options: ['Jaemin', 'Renjun', 'Haechan', 'Jisung'],
+        photo: 'jaemin.jpg',
+        hint: 'My Bias in NCT DREAM is...'
+    },
+    {
+        group: 'NCT WISH',
+        member: 'Riku',
+        options: ['Sakuya', 'Ryo', 'Riku', 'Yushi'],
+        photo: 'riku.jpeg',
+        hint: "Who's my Bias in NCT WISH?"
+    },
+    {
+        group: 'LNGSHOT',
+        member: 'Ohyul',
+        options: ['Ryul', 'Louis', 'Woojin', 'Ohyul'],
+        photo: 'ohyul.jpeg',
+        hint: 'Guess My Bias in LNGSHOT!'
+    },
+    {
+        group: 'TREASURE',
+        member: 'Junkyu',
+        options: ['Asahi', 'Junkyu', 'Jihoon', 'Haruto'],
+        photo: 'junkyu.jpeg',
+        hint: "Who's my Bias in TREASURE?"
+    },
+    {
+        group: 'ENHYPEN',
+        member: 'Sunghoon',
+        options: ['Jungwon', 'Sunghoon', 'Jay', 'Sunoo'],
+        photo: 'sunghoon.jpg',
+        hint: 'Guess My Bias in ENHYPEN!'
+    }
+];
+
+  let biasIndex=0,biasCorrect=0,biasAnswered=false;
+  function renderBiasQuestion() {
+    const q=biasQuestions[biasIndex];
+    document.getElementById('biasProgress').textContent=biasIndex+1;
+    document.getElementById('biasScore').textContent=biasCorrect;
+    document.getElementById('biasQuestion').textContent=q.hint;
+    const biasPhotoBox = document.getElementById('biasPhoto');
+    biasPhotoBox.innerHTML = '';
+    const biasImg = document.createElement('img');
+    biasImg.src = q.photo;
+    biasImg.alt = q.member;
+    biasImg.style.width = '100%';
+    biasImg.style.height = '270px';
+    biasImg.style.objectFit = 'contain';
+    biasImg.style.display = 'block';
+    biasImg.style.margin = 'auto';
+    biasPhotoBox.appendChild(biasImg);
+    document.getElementById('biasFeedback').textContent='';
+    document.getElementById('nextBias').disabled=true;
+    document.getElementById('nextBias').classList.remove('hidden');
+    document.getElementById('toDramas').classList.add('hidden');
+    const holder=document.getElementById('biasAnswers'); holder.innerHTML='';
+    q.options.forEach(opt=>{
+      const b=document.createElement('button'); b.className='secondary'; b.textContent=opt;
+      b.onclick=()=>answerBias(opt,b); holder.appendChild(b);
+    });
+    biasAnswered=false;
+  }
+  function answerBias(opt,btn) {
+    if(biasAnswered) return; biasAnswered=true;
+    const q=biasQuestions[biasIndex];
+    if(opt===q.member) { biasCorrect++; document.getElementById('biasFeedback').textContent="Correct! 🎉 You're so good at guessing my bias! 🫶🏻"; }
+    else document.getElementById('biasFeedback').textContent='Not quite! The correct answer is '+q.member+'. Good luck with the next question! You’ve got this!';
+    document.getElementById('biasScore').textContent=biasCorrect;
+    document.getElementById('biasProgress').textContent=biasIndex+1;
+    document.querySelectorAll('#biasAnswers button').forEach(b=>b.disabled=true);
+    document.getElementById('nextBias').disabled=false;
+    if(biasIndex===biasQuestions.length-1) {
+      document.getElementById('nextBias').textContent='View Result →';
+    }
+  }
+  function nextBiasQuestion() {
+    if(biasIndex < biasQuestions.length-1) { biasIndex++; renderBiasQuestion(); return; }
+    document.getElementById('nextBias').classList.add('hidden');
+    document.getElementById('toDramas').classList.remove('hidden');
+    if(biasCorrect>=3) {
+      document.getElementById('biasFeedback').textContent='Cool! You answered '+biasCorrect+' correct out of 5! 🎉💗 The next page is now unlocked!! ✨';
+      document.getElementById('toDramas').disabled=false;
+    } else {
+      document.getElementById('biasFeedback').textContent='You got '+biasCorrect+' out of 5 correct! 💗 You need at least 3 correct answers to move on. Press Retry Quiz to try again!';
+      document.getElementById('toDramas').disabled=true;
+    }
+  }
+  function restartBiasQuiz() {
+    biasIndex=0; biasCorrect=0; renderBiasQuestion();
+    document.getElementById('nextBias').textContent='Next Question →';
+  }
+  renderBiasQuestion();
+
+  // SYAKIRA PROFILE PHOTO SLIDER
+  const syakiraPhotoSlides = document.querySelector('.profile-photo-slider .slides');
+  const syakiraSliderDots = document.getElementById('syakiraSliderDots');
+  let syakiraPhotoIndex = 0;
+  const syakiraPhotoTotal = syakiraPhotoSlides ? syakiraPhotoSlides.querySelectorAll('img').length : 0;
+
+  function tampilkanFotoSyakira(index) {
+    if (!syakiraPhotoSlides || syakiraPhotoTotal === 0) return;
+    syakiraPhotoIndex = (index + syakiraPhotoTotal) % syakiraPhotoTotal;
+    syakiraPhotoSlides.style.transform = `translateX(-${syakiraPhotoIndex * 100}%)`;
+    syakiraSliderDots.querySelectorAll('button').forEach((dot, i) => {
+      dot.classList.toggle('active', i === syakiraPhotoIndex);
+      dot.setAttribute('aria-pressed', i === syakiraPhotoIndex ? 'true' : 'false');
+    });
+  }
+
+  function geserFotoSyakira(arah) {
+    tampilkanFotoSyakira(syakiraPhotoIndex + arah);
+  }
+
+  if (syakiraPhotoSlides && syakiraSliderDots) {
+    for (let i = 0; i < syakiraPhotoTotal; i++) {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.setAttribute('aria-label', `View Syakira photo ${i + 1}`);
+      dot.addEventListener('click', () => tampilkanFotoSyakira(i));
+      syakiraSliderDots.appendChild(dot);
+    }
+    window.geserFotoSyakira = geserFotoSyakira;
+    tampilkanFotoSyakira(0);
+  }
+
+  // CONCERT PHOTO SLIDER
+  const photoSlides = document.querySelector('.concert-card .photo-slider .slides');
+  const sliderDots = document.getElementById('sliderDots');
+
+  if (photoSlides && sliderDots) {
+    let indexFoto = 0;
+    const totalFoto = photoSlides.querySelectorAll('img').length;
+
+    function tampilkanFoto(index) {
+      if (totalFoto === 0) return;
+      indexFoto = (index + totalFoto) % totalFoto;
+      photoSlides.style.transform = `translateX(-${indexFoto * 100}%)`;
+      sliderDots.querySelectorAll('button').forEach((dot, i) => {
+        dot.classList.toggle('active', i === indexFoto);
+        dot.setAttribute('aria-pressed', i === indexFoto ? 'true' : 'false');
+      });
+    }
+
+    function geserFoto(arah) {
+      tampilkanFoto(indexFoto + arah);
+    }
+
+    for (let i = 0; i < totalFoto; i++) {
+      const dot = document.createElement('button');
+      dot.type = 'button';
+      dot.setAttribute('aria-label', `View photo ${i + 1}`);
+      dot.addEventListener('click', () => tampilkanFoto(i));
+      sliderDots.appendChild(dot);
+    }
+
+    window.geserFoto = geserFoto;
+    tampilkanFoto(0);
+  }
+
+</script>
+</body>
+</html>
